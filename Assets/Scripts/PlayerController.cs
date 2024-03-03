@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     PlatformManager platformManager;
-
+    private Transform levelReference;
     private Rigidbody2D rb;
     public float moveSpeed = 5f;
     public float jumpForce = 5f;
@@ -15,26 +15,29 @@ public class PlayerController : MonoBehaviour
     private bool isWallSliding;
     private GameObject contactingWall;
 
+    private Vector3 moveVelocity;
     //debug
-    public Vector2 jumpVelocity;
-    public Vector2 jumpDirection;
+    public Vector3 jumpVelocity;
+    public Vector3 jumpDirection;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        //rb = GetComponent<Rigidbody2D>();
         platformManager = FindObjectOfType<PlatformManager>();
-
+        levelReference = platformManager.GetLevel();
     }
 
     void Update()
     {
-        Move();
+        NewMove();
         if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2 || 
             Input.GetKeyDown(KeyCode.Space) && isWallSliding && jumpCount < 3)
         {
-            Jump();
+            NewJump();
         }
 
+        Vector3 targetVelocity =jumpVelocity + moveVelocity;
+        levelReference.position += targetVelocity*Time.deltaTime;
         if(isWallSliding)
         {
             //display an arrow in the opposing direction from the wall the player is attached to
@@ -47,6 +50,34 @@ public class PlayerController : MonoBehaviour
         Vector2 targetVelocity = new Vector2(x * moveSpeed, rb.velocity.y);
         rb.velocity = targetVelocity;
     }
+
+    void NewMove()
+    {
+        //negative because we want the level to move the opposite direction we're pressing
+        float x = -Input.GetAxis("Horizontal");
+
+        //get the level and move it in the opposite direction of the move vector
+        Vector3 moveDir = new Vector3(x,0.0f,0.0f);
+        moveDir.Normalize();
+        moveVelocity = moveDir* moveSpeed;
+        //levelReference.transform.position += moveDir;
+    }
+
+    //moving the level instead of the player
+    void NewJump()
+    {
+        Vector3 jumpDirection = Vector3.zero;
+        jumpCount++;
+        //TODO: move the level in a parabola shape for the jump
+        if(jumpCount ==1)
+        {
+            jumpDirection = Vector3.down * jumpForce;
+
+        }
+
+        jumpVelocity = jumpDirection;
+    }
+
 
     void Jump()
     {
@@ -70,7 +101,7 @@ public class PlayerController : MonoBehaviour
 
                 // Apply jump force upwards and opposite to the wall side
                 // (wallSide will be positive if wall is on the right, negative if on the left), 
-                jumpDirection += Vector2.right * -wallSide;
+                jumpDirection += Vector3.right * -wallSide;
                 jumpDirection.Normalize();
 
                 //rb.velocity += jumpDirection * 25;
@@ -90,7 +121,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //add force
-        rb.velocity += jumpVelocity;
+        //rb.velocity += jumpVelocity;
     }
 
     // Check if the player is grounded

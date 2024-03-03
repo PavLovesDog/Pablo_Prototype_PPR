@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BackgroundRepeater : MonoBehaviour
 {
+    [SerializeField] private Transform levelParent;
     public GameObject backgroundPrefab; // Reference to the background prefab
     public Vector2 spawnOffset = new Vector2(0, 30); // Offset for spawning the next background
 
@@ -14,7 +15,7 @@ public class BackgroundRepeater : MonoBehaviour
     void Start()
     {
         // Instantiate the initial background and keep a reference to it
-        GameObject initialBackground = Instantiate(backgroundPrefab, transform.position, Quaternion.identity);
+        GameObject initialBackground = Instantiate(backgroundPrefab, transform.position, Quaternion.identity,levelParent);
         currentSpawnedBackground = initialBackground;
         lastSpawnedBackgroundUp = initialBackground;
         lastSpawnedBackgroundDown = initialBackground;
@@ -32,7 +33,7 @@ public class BackgroundRepeater : MonoBehaviour
             // Calculate the new spawn position above and instantiate
             Vector3 nextSpawnPositionUp = new Vector3(lastSpawnedBackgroundUp.transform.position.x, lastSpawnedBackgroundUp.transform.position.y + spawnOffset.y, lastSpawnedBackgroundUp.transform.position.z);
             GameObject newBackgroundUp = Instantiate(backgroundPrefab, nextSpawnPositionUp, Quaternion.identity);
-            
+            newBackgroundUp.transform.parent = levelParent.transform;
             // Update the reference to the last spawned background upwards
             lastSpawnedBackgroundUp = newBackgroundUp;
         }
@@ -46,7 +47,7 @@ public class BackgroundRepeater : MonoBehaviour
             // Calculate spawning pos below + instantiuate
             Vector3 nextSpawnPositionDown = new Vector3(lastSpawnedBackgroundDown.transform.position.x, lastSpawnedBackgroundDown.transform.position.y - spawnOffset.y, lastSpawnedBackgroundDown.transform.position.z);
             GameObject newBackgroundDown = Instantiate(backgroundPrefab, nextSpawnPositionDown, Quaternion.identity);
-           
+           newBackgroundDown.transform.parent = levelParent.transform;
             // Update the reference to the last spawned background downwards
             lastSpawnedBackgroundDown = newBackgroundDown;
         }

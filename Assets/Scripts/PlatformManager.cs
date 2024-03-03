@@ -6,9 +6,10 @@ using UnityEngine;
 
 public class PlatformManager : MonoBehaviour
 {
+    [SerializeField]  private Transform levelParent;
     public GameObject platformPrefab;
     public int numberOfPlatforms = 6; // No. of platforms to keep in the pool
-    private float verticalSpawnSpacing = 5f; // Vertical spacing between platforms
+    private float verticalSpawnSpacing = 5f; // Threshhold height for spawning platforms / Vertical spacing between platforms
     public float minVerticalSpacing = 2f; //Minimum height for platform spawn
     public float maxVerticalSpacing = 6f; //Maximum height 
     public float minXOffset = -1f; // Minimum width for platform spawn
@@ -42,11 +43,12 @@ public class PlatformManager : MonoBehaviour
     {
         //determine position and spawn
         float platformXPosition = Random.Range(minXOffset, maxXOffset);
-        GameObject newPlatform = Instantiate(platformPrefab, new Vector2(platformXPosition, nextSpawnY), Quaternion.identity);
+        GameObject newPlatform = Instantiate(platformPrefab, new Vector2(platformXPosition, nextSpawnY), Quaternion.identity,levelParent.transform);
 
         // Randomly adjust the platform's scale on the x-axis.
         float scaleX = Random.Range(scaleRange.x, scaleRange.y);
         newPlatform.transform.localScale = new Vector3(scaleX, newPlatform.transform.localScale.y, newPlatform.transform.localScale.z);
+        newPlatform.transform.parent = levelParent.transform;
 
         platforms.Enqueue(newPlatform);
         nextSpawnY += Random.Range(minVerticalSpacing, maxVerticalSpacing); // randomize Y position for nextr spawn
@@ -78,5 +80,10 @@ public class PlatformManager : MonoBehaviour
 
         // Adjust nextSpawnY as well to keep future spawns aligned
         nextSpawnY -= jumpHeight;
+    }
+
+    public Transform GetLevel()
+    {
+        return levelParent;
     }
 }
