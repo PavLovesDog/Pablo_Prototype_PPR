@@ -15,10 +15,10 @@ public class PlayerController : MonoBehaviour
     private bool isWallSliding;
     private GameObject contactingWall;
 
-    private Vector3 moveVelocity;
+    private Vector2 moveVelocity;
     //debug
-    public Vector3 jumpVelocity;
-    public Vector3 jumpDirection;
+    public Vector2 jumpVelocity;
+    public Vector2 jumpDirection;
 
     void Start()
     {
@@ -29,19 +29,19 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        NewMove();
+        Move();
         if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2 || 
             Input.GetKeyDown(KeyCode.Space) && isWallSliding && jumpCount < 3)
         {
-            NewJump();
+            Jump();
         }
 
-        Vector3 targetVelocity =jumpVelocity + moveVelocity;
-        levelReference.position += targetVelocity*Time.deltaTime;
+        Vector2 targetVelocity =jumpVelocity + moveVelocity;
         if(isWallSliding)
         {
             //display an arrow in the opposing direction from the wall the player is attached to
         }
+
     }
 
     void Move()
@@ -51,32 +51,10 @@ public class PlayerController : MonoBehaviour
         rb.velocity = targetVelocity;
     }
 
-    void NewMove()
-    {
-        //negative because we want the level to move the opposite direction we're pressing
-        float x = -Input.GetAxis("Horizontal");
 
-        //get the level and move it in the opposite direction of the move vector
-        Vector3 moveDir = new Vector3(x,0.0f,0.0f);
-        moveDir.Normalize();
-        moveVelocity = moveDir* moveSpeed;
-        //levelReference.transform.position += moveDir;
-    }
-
-    //moving the level instead of the player
-    void NewJump()
-    {
-        Vector3 jumpDirection = Vector3.zero;
-        jumpCount++;
-        //TODO: move the level in a parabola shape for the jump
-        if(jumpCount ==1)
-        {
-            jumpDirection = Vector3.down * jumpForce;
-
-        }
-
-        jumpVelocity = jumpDirection;
-    }
+     //TODO:
+    // move character like normal
+    // have camera stationary and move level down when character lands on a platform.
 
 
     void Jump()
@@ -101,7 +79,7 @@ public class PlayerController : MonoBehaviour
 
                 // Apply jump force upwards and opposite to the wall side
                 // (wallSide will be positive if wall is on the right, negative if on the left), 
-                jumpDirection += Vector3.right * -wallSide;
+                jumpDirection += Vector2.right * -wallSide;
                 jumpDirection.Normalize();
 
                 //rb.velocity += jumpDirection * 25;
