@@ -55,10 +55,6 @@ public class PlayerController : MonoBehaviour
     }
 
 
-     //TODO:
-    // move character like normal
-    // have camera stationary and move level down when character lands on a platform.
-
 
     void Jump()
     {
