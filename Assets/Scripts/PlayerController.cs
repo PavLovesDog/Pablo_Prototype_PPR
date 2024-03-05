@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -7,6 +8,7 @@ public class PlayerController : MonoBehaviour
     PlatformManager platformManager;
     private Transform levelReference;
     private Rigidbody2D rb;
+    public float scrollSpeed = 5.0f;
     public float moveSpeed = 5f;
     public float jumpForce = 5f;
     private int jumpCount = 0;
@@ -22,9 +24,10 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        //rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         platformManager = FindObjectOfType<PlatformManager>();
         levelReference = platformManager.GetLevel();
+        jumpVelocity = Vector2.zero;
     }
 
     void Update()
@@ -41,7 +44,7 @@ public class PlayerController : MonoBehaviour
         {
             //display an arrow in the opposing direction from the wall the player is attached to
         }
-
+        UpdatePosition();
     }
 
     void Move()
@@ -63,8 +66,8 @@ public class PlayerController : MonoBehaviour
 
         jumpCount++; // increment jump counter
 
-        //Vector2 jumpVelocity = Vector2.zero;
         jumpVelocity = Vector2.zero;
+        
 
         // if its the first jump OR we are wall sliding, add normal force
         if (jumpCount == 1 || isWallSliding)
@@ -99,18 +102,30 @@ public class PlayerController : MonoBehaviour
         }
 
         //add force
-        //rb.velocity += jumpVelocity;
+        rb.velocity += jumpVelocity;
+    }
+
+    private void UpdatePosition()
+    {
+        if (isGrounded&&transform.position.y > -1)
+        {
+            levelReference.Translate(Vector3.down * scrollSpeed*Time.deltaTime);
+            transform.Translate(Vector3.down* scrollSpeed*Time.deltaTime);
+        }
     }
 
     // Check if the player is grounded
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log(collision.gameObject.name);
-
-        if (collision.gameObject.CompareTag("Ground"))
+        //if the collided object is ground (i.e. platform) and if the platform is below player
+        if (collision.gameObject.CompareTag("Ground") && collision.transform.position.y < transform.position.y)
         {
             isGrounded = true;
             jumpCount = 0; // reset jump count
+            //move level down
+            
+           
         }
 
         if (collision.gameObject.CompareTag("Wall"))
@@ -128,7 +143,18 @@ public class PlayerController : MonoBehaviour
             //jumpCount = 0;
         }
     }
+    //quits the game when the character falls off screen (This will be changed to an end screen
+    private void OnBecameInvisible()
+    {
+        if(transform.position.y < Camera.main.transform.position.y-5)
+        {
 
+            print("not on screen");
+            UnityEditor.EditorApplication.isPlaying = false;
+            Application.Quit();
+
+        }
+    }
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))

@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// TODO:
+///     change so that background changes when scrolling
+/// </summary>
 public class BackgroundRepeater : MonoBehaviour
 {
     [SerializeField] private Transform levelParent;
