@@ -104,10 +104,15 @@ public class PlayerController : MonoBehaviour
 
     private void UpdatePosition()
     {
-        if (isGrounded&&transform.position.y > -1)
+        if (/*isGrounded&&*/transform.position.y > -1)
         {
             levelReference.Translate(Vector3.down * scrollSpeed*Time.deltaTime);
             transform.Translate(Vector3.down* scrollSpeed*Time.deltaTime);
+        }
+        else if (transform.position.y < -4.5f) // below camera range, scroll back down a little
+        {
+            levelReference.Translate(Vector3.up * scrollSpeed * Time.deltaTime);
+            transform.Translate(Vector3.up * scrollSpeed * Time.deltaTime);
         }
         else
         {
