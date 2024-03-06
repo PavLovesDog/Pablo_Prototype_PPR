@@ -1,15 +1,17 @@
 //using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Android;
 
 public class PlatformManager : MonoBehaviour
 {
+    private bool platformGo = true; //tells the program when platforms are moving/adjusting for player
     [SerializeField]  private Transform levelParent;
     public GameObject platformPrefab;
-    GameObject lastPlacedPlatfrom;
+    GameObject lastPlacedPlatform;
     public int numberOfPlatforms = 6; // No. of platforms to keep in the pool
     private float verticalSpawnSpacing = 5f; // Threshhold height for spawning platforms / Vertical spacing between platforms
     public float minVerticalSpacing = 2f; //Minimum height for platform spawn
@@ -19,12 +21,15 @@ public class PlatformManager : MonoBehaviour
 
     public Vector2 scaleRange = new Vector2(0.8f, 1.2f); // Range of scale sizes for platforms (x-axis scaling).
 
-    private Queue<GameObject> platforms = new Queue<GameObject>();
+    private List<GameObject> platforms = new List<GameObject>();
+    
     private float nextSpawnY;
 
     void Start()
     {
-        nextSpawnY = transform.position.y;
+        platforms.Add(levelParent.Find("Platform - Stone_Brick").gameObject);
+
+        lastPlacedPlatform = platforms[0];
         
         for (int i = 0; i < numberOfPlatforms; i++)
         {
@@ -38,12 +43,13 @@ public class PlatformManager : MonoBehaviour
     void Update()
     {
         float spawnThreshold = Camera.main.transform.GetChild(0).position.y;
-        if(platforms.Peek().transform.position.y < spawnThreshold)
+        if (platforms[0].transform.position.y < spawnThreshold && platformGo)
         {
-            SpawnPlatform();
+            //SpawnPlatform();
             RecyclePlatform();
         }
        
+        
 
         //spawn platforms based on camera position
         /*
@@ -57,6 +63,8 @@ public class PlatformManager : MonoBehaviour
 
     void SpawnPlatform()
     {
+        //grab next Y position for the next platform
+        nextSpawnY = Random.Range(lastPlacedPlatform.transform.position.y + minVerticalSpacing , lastPlacedPlatform.transform.position.y + maxVerticalSpacing);
         //determine position and spawn
         float platformXPosition = Random.Range(minXOffset, maxXOffset);
         GameObject newPlatform = Instantiate(platformPrefab, new Vector2(platformXPosition, nextSpawnY), Quaternion.identity,levelParent.transform);
@@ -66,16 +74,17 @@ public class PlatformManager : MonoBehaviour
         newPlatform.transform.localScale = new Vector3(scaleX, newPlatform.transform.localScale.y, newPlatform.transform.localScale.z);
         newPlatform.transform.parent = levelParent.transform;
 
-        platforms.Enqueue(newPlatform);
-        lastPlacedPlatfrom = newPlatform;
-        nextSpawnY = Random.Range(lastPlacedPlatfrom.transform.position.y + minVerticalSpacing, lastPlacedPlatfrom.transform.position.y + maxVerticalSpacing);
+        platforms.Add(newPlatform);
+        lastPlacedPlatform = newPlatform;
         //nextSpawnY += Random.Range(minVerticalSpacing, maxVerticalSpacing); // randomize Y position for nextr spawn
     }
 
     void RecyclePlatform()
     {
+        nextSpawnY = Random.Range(lastPlacedPlatform.transform.position.y + minVerticalSpacing, lastPlacedPlatform.transform.position.y + maxVerticalSpacing);
         // Recycle the oldest platform in the queue by moving it to the next spawn position.
-        GameObject recycledPlatform = platforms.Dequeue();
+        GameObject recycledPlatform = platforms.First();
+        platforms.Remove(platforms.First());
         recycledPlatform.transform.position = new Vector2(Random.Range(minXOffset, maxXOffset), nextSpawnY);
 
         // randomize the scale again for new platform
@@ -83,7 +92,8 @@ public class PlatformManager : MonoBehaviour
         recycledPlatform.transform.localScale = new Vector3(scaleX, recycledPlatform.transform.localScale.y, recycledPlatform.transform.localScale.z);
 
         //add back into queue and randomze spacing
-        platforms.Enqueue(recycledPlatform);
+        platforms.Add(recycledPlatform);
+        lastPlacedPlatform = recycledPlatform;
        // nextSpawnY = Random.Range(recycledPlatform.transform.position.y + minVerticalSpacing, recycledPlatform.transform.position.y + maxVerticalSpacing);
 
        // nextSpawnY += Random.Range(minVerticalSpacing, maxVerticalSpacing);
@@ -102,6 +112,10 @@ public class PlatformManager : MonoBehaviour
         nextSpawnY -= jumpHeight;
     }
 
+    public void SwitchLevelPosUpdate()
+    {
+        
+    }
     public Transform GetLevel()
     {
         return levelParent;

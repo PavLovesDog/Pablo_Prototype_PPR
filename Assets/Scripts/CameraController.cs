@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+
+    /// <summary>
+    /// TODO:
+    ///     - have camera follow player when going off screen to the top and then back to center
+    ///     
+    /// </summary>
     public Transform target; // The target the camera will follow
     public float smoothSpeed = 0.125f; // Adjust this value to change how quickly the camera follows the target
     public Vector3 offset; // Offset from the target's position

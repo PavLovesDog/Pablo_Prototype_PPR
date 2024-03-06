@@ -8,10 +8,12 @@ using UnityEngine;
 /// </summary>
 public class BackgroundRepeater : MonoBehaviour
 {
+    
     [SerializeField] private Transform levelParent;
     public GameObject backgroundPrefab; // Reference to the background prefab
     public Vector2 spawnOffset = new Vector2(0, 30); // Offset for spawning the next background
 
+    private float spawnThreshold;
     public GameObject lastSpawnedBackgroundUp;
     public GameObject currentSpawnedBackground;
     public GameObject lastSpawnedBackgroundDown;
@@ -23,12 +25,16 @@ public class BackgroundRepeater : MonoBehaviour
         currentSpawnedBackground = initialBackground;
         lastSpawnedBackgroundUp = initialBackground;
         lastSpawnedBackgroundDown = initialBackground;
+        
     }
 
     void Update()
     {
+        float spawnThresholdBelow = Camera.main.transform.GetChild(0).position.y;
+        float spawnThresholdAbove = Camera.main.transform.GetChild(1).position.y;
         // Check if the camera has moved past the point of the last spawned background upwards
-        if (Camera.main.transform.position.y >= lastSpawnedBackgroundUp.transform.position.y)
+        //if (Camera.main.transform.position.y >= lastSpawnedBackgroundUp.transform.position.y)
+        if (spawnThresholdBelow >= lastSpawnedBackgroundUp.transform.position.y)
         {
             //update current and bottom backgrounds
             lastSpawnedBackgroundDown = currentSpawnedBackground;
@@ -42,7 +48,7 @@ public class BackgroundRepeater : MonoBehaviour
             lastSpawnedBackgroundUp = newBackgroundUp;
         }
         // Check if the camera has moved past a certain point of the last spawned background downwards
-        else if (Camera.main.transform.position.y <= lastSpawnedBackgroundDown.transform.position.y)
+        else if (spawnThresholdAbove <= lastSpawnedBackgroundDown.transform.position.y)
         {
             //update current background
             lastSpawnedBackgroundUp = currentSpawnedBackground;

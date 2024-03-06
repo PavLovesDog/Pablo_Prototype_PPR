@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
 
     private bool isGrounded;
     private bool isWallSliding;
+    private bool levelUpdated = true;
     private GameObject contactingWall;
 
     private Vector2 moveVelocity;
@@ -108,6 +109,10 @@ public class PlayerController : MonoBehaviour
             levelReference.Translate(Vector3.down * scrollSpeed*Time.deltaTime);
             transform.Translate(Vector3.down* scrollSpeed*Time.deltaTime);
         }
+        else
+        {
+            levelUpdated = true;
+        }
     }
 
     // Check if the player is grounded
@@ -119,9 +124,7 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = true;
             jumpCount = 0; // reset jump count
-            //move level down
-            
-           
+            levelUpdated = false;
         }
 
         if (collision.gameObject.CompareTag("Wall"))
