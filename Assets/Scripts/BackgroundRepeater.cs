@@ -67,7 +67,7 @@ public class BackgroundRepeater : MonoBehaviour
         float spawnThresholdAbove = Camera.main.transform.GetChild(1).position.y;
         // Check if the camera has moved past the point of the last spawned background upwards
         //if (Camera.main.transform.position.y >= lastSpawnedBackgroundUp.transform.position.y)
-        if (spawnThresholdBelow >= lastSpawnedBackgroundUp.transform.position.y) 
+        if (spawnThresholdBelow + 10 >= lastSpawnedBackgroundUp.transform.position.y) //NOTE added 10 offset to always spawn the background early
         {
             //update current and bottom backgrounds
            // lastSpawnedBackgroundDown = currentSpawnedBackground;
