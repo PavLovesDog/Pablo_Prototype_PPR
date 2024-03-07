@@ -10,7 +10,8 @@ public class PlatformManager : MonoBehaviour
 {
     private bool platformGo = true; //tells the program when platforms are moving/adjusting for player
     [SerializeField]  private Transform levelParent;
-    public GameObject platformPrefab;
+    private GameObject currAreaPlatform; // the current area's platform being used
+    public List<GameObject> platformPrefab;
     GameObject lastPlacedPlatform;
     public int numberOfPlatforms = 6; // No. of platforms to keep in the pool
     private float verticalSpawnSpacing = 5f; // Threshhold height for spawning platforms / Vertical spacing between platforms
@@ -21,14 +22,15 @@ public class PlatformManager : MonoBehaviour
 
     public Vector2 scaleRange = new Vector2(0.8f, 1.2f); // Range of scale sizes for platforms (x-axis scaling).
 
-    private List<GameObject> platforms = new List<GameObject>();
+    [SerializeField]private List<GameObject> platforms = new List<GameObject>();
     
     private float nextSpawnY;
 
     void Start()
     {
-        platforms.Add(levelParent.Find("Platform - Stone_Brick").gameObject);
-
+        
+        platforms.Add(levelParent.Find("innerCorePlatform").gameObject);
+        currAreaPlatform = platformPrefab[0];
         lastPlacedPlatform = platforms[0];
         
         for (int i = 0; i < numberOfPlatforms; i++)
@@ -36,16 +38,13 @@ public class PlatformManager : MonoBehaviour
             SpawnPlatform();
         }
     }
-    /// <summary>
-    /// TODO:
-    /// - Fix platform spawning
-    /// </summary>
+
     void Update()
     {
         float spawnThreshold = Camera.main.transform.GetChild(0).position.y;
         if (platforms[0].transform.position.y < spawnThreshold && platformGo)
         {
-            //SpawnPlatform();
+
             RecyclePlatform();
         }
        
@@ -67,7 +66,7 @@ public class PlatformManager : MonoBehaviour
         nextSpawnY = Random.Range(lastPlacedPlatform.transform.position.y + minVerticalSpacing , lastPlacedPlatform.transform.position.y + maxVerticalSpacing);
         //determine position and spawn
         float platformXPosition = Random.Range(minXOffset, maxXOffset);
-        GameObject newPlatform = Instantiate(platformPrefab, new Vector2(platformXPosition, nextSpawnY), Quaternion.identity,levelParent.transform);
+        GameObject newPlatform = Instantiate(currAreaPlatform, new Vector2(platformXPosition, nextSpawnY), Quaternion.identity,levelParent.transform);
 
         // Randomly adjust the platform's scale on the x-axis.
         float scaleX = Random.Range(scaleRange.x, scaleRange.y);
@@ -85,7 +84,9 @@ public class PlatformManager : MonoBehaviour
         // Recycle the oldest platform in the queue by moving it to the next spawn position.
         GameObject recycledPlatform = platforms.First();
         platforms.Remove(platforms.First());
-        recycledPlatform.transform.position = new Vector2(Random.Range(minXOffset, maxXOffset), nextSpawnY);
+        float platformXPosition = Random.Range(minXOffset, maxXOffset);
+        Destroy(recycledPlatform.gameObject);
+        recycledPlatform = Instantiate(currAreaPlatform, new Vector2(platformXPosition, nextSpawnY), Quaternion.identity, levelParent.transform);
 
         // randomize the scale again for new platform
         float scaleX = Random.Range(scaleRange.x, scaleRange.y);
@@ -94,9 +95,6 @@ public class PlatformManager : MonoBehaviour
         //add back into queue and randomze spacing
         platforms.Add(recycledPlatform);
         lastPlacedPlatform = recycledPlatform;
-       // nextSpawnY = Random.Range(recycledPlatform.transform.position.y + minVerticalSpacing, recycledPlatform.transform.position.y + maxVerticalSpacing);
-
-       // nextSpawnY += Random.Range(minVerticalSpacing, maxVerticalSpacing);
     }
 
     //NOTE TEMP PLACEHOLDER, Will need to move platforms like a smooth physiscs jump
@@ -112,12 +110,14 @@ public class PlatformManager : MonoBehaviour
         nextSpawnY -= jumpHeight;
     }
 
-    public void SwitchLevelPosUpdate()
-    {
-        
-    }
+
     public Transform GetLevel()
     {
         return levelParent;
+    }
+    //change the platform prefave depending on area
+    public void SetAreaPlatforms(int pos)
+    {
+        currAreaPlatform = platformPrefab[pos];
     }
 }
