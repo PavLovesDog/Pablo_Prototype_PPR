@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -34,14 +35,14 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         Move();
-        if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2 || 
+        if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2 ||
             Input.GetKeyDown(KeyCode.Space) && isWallSliding && jumpCount < 3)
         {
             Jump();
         }
 
-        Vector2 targetVelocity =jumpVelocity + moveVelocity;
-        if(isWallSliding)
+        Vector2 targetVelocity = jumpVelocity + moveVelocity;
+        if (isWallSliding)
         {
             //display an arrow in the opposing direction from the wall the player is attached to
         }
@@ -64,7 +65,7 @@ public class PlayerController : MonoBehaviour
         jumpCount++; // increment jump counter
 
         jumpVelocity = Vector2.zero;
-        
+
 
         // if its the first jump OR we are wall sliding, add normal force
         if (jumpCount == 1 || isWallSliding)
@@ -106,8 +107,8 @@ public class PlayerController : MonoBehaviour
     {
         if (/*isGrounded&&*/transform.position.y > -1)
         {
-            levelReference.Translate(Vector3.down * scrollSpeed*Time.deltaTime);
-            transform.Translate(Vector3.down* scrollSpeed*Time.deltaTime);
+            levelReference.Translate(Vector3.down * scrollSpeed * Time.deltaTime);
+            transform.Translate(Vector3.down * scrollSpeed * Time.deltaTime);
         }
         else if (transform.position.y < -4.5f) // below camera range, scroll back down a little
         {
@@ -150,13 +151,15 @@ public class PlayerController : MonoBehaviour
     //quits the game when the character falls off screen (This will be changed to an end screen
     private void OnBecameInvisible()
     {
-        if(transform.position.y < Camera.main.transform.position.y-5)
+        if (transform.position.y < Camera.main.transform.position.y - 5)
         {
-
-            print("not on screen");
-            UnityEditor.EditorApplication.isPlaying = false;
+            //Checks wheehter it's played in unity editor or standalone. This is only for quitting so far
+#if UNITY_EDITOR
+            if (EditorApplication.isPlaying)
+                EditorApplication.isPlaying = false;
+#else
             Application.Quit();
-
+#endif
         }
     }
     private void OnCollisionExit2D(Collision2D collision)
