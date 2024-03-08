@@ -20,6 +20,19 @@ public class PlatformManager : MonoBehaviour
     public float minXOffset = -1f; // Minimum width for platform spawn
     public float maxXOffset = 1f; // Maximum width
 
+    #region Random Flat Generator
+    //Random Num Gen using System.Random (Random.Range been acting up.. generates same 2 numbers in recycle platform)
+    private System.Random systemRandom = new System.Random();
+
+    private float GenerateRandomFloat(float minValue, float maxValue)
+    {
+        double range = maxValue - minValue; // create range
+        double sample = systemRandom.NextDouble(); // generate random
+        double scaled = (sample * range) + minValue; // scale the vcale by range
+        return (float)scaled; // return Converted to float
+    }
+    #endregion
+
     public Vector2 scaleRange = new Vector2(0.8f, 1.2f); // Range of scale sizes for platforms (x-axis scaling).
 
     [SerializeField]private List<GameObject> platforms = new List<GameObject>();
@@ -80,11 +93,13 @@ public class PlatformManager : MonoBehaviour
 
     void RecyclePlatform()
     {
-        nextSpawnY = Random.Range(lastPlacedPlatform.transform.position.y + minVerticalSpacing, lastPlacedPlatform.transform.position.y + maxVerticalSpacing);
+        nextSpawnY = GenerateRandomFloat(lastPlacedPlatform.transform.position.y + minVerticalSpacing, lastPlacedPlatform.transform.position.y + maxVerticalSpacing);
         // Recycle the oldest platform in the queue by moving it to the next spawn position.
         GameObject recycledPlatform = platforms.First();
         platforms.Remove(platforms.First());
-        float platformXPosition = Random.Range(minXOffset, maxXOffset);
+        Debug.Log($"minXOffset: {minXOffset}, maxXOffset: {maxXOffset}");
+        float platformXPosition = GenerateRandomFloat(minXOffset, maxXOffset);
+        Debug.Log($"platformXPosition: {platformXPosition}");
         Destroy(recycledPlatform.gameObject);
         recycledPlatform = Instantiate(currAreaPlatform, new Vector2(platformXPosition, nextSpawnY), Quaternion.identity, levelParent.transform);
 
