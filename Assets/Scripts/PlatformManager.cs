@@ -97,9 +97,9 @@ public class PlatformManager : MonoBehaviour
         // Recycle the oldest platform in the queue by moving it to the next spawn position.
         GameObject recycledPlatform = platforms.First();
         platforms.Remove(platforms.First());
-        Debug.Log($"minXOffset: {minXOffset}, maxXOffset: {maxXOffset}");
+        //Debug.Log($"minXOffset: {minXOffset}, maxXOffset: {maxXOffset}");
         float platformXPosition = GenerateRandomFloat(minXOffset, maxXOffset);
-        Debug.Log($"platformXPosition: {platformXPosition}");
+        //Debug.Log($"platformXPosition: {platformXPosition}");
         Destroy(recycledPlatform.gameObject);
         recycledPlatform = Instantiate(currAreaPlatform, new Vector2(platformXPosition, nextSpawnY), Quaternion.identity, levelParent.transform);
 

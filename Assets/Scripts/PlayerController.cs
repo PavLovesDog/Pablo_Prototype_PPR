@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,29 +21,48 @@ public class PlayerController : MonoBehaviour
     private bool levelUpdated = true;
     private GameObject contactingWall;
 
-    //TESTING
-    [SerializeField] private float distanceTravelled = 0;
-    [SerializeField] private float distanceMultiplier = 2f;
+    //Health
+    public int currentHitsLeft;
+    public int maxHits = 3;
+
+    //TESTING - scoring bool
+    public bool isScoring = false;
 
     private Vector2 moveVelocity;
     //debug
     public Vector2 jumpVelocity;
     public Vector2 jumpDirection;
 
+    SpriteRenderer sprite;
+    bool canResetIsGrounded = true;
+
     void Start()
     {
+        //set health full
+        currentHitsLeft = maxHits;
+
         rb = GetComponent<Rigidbody2D>();
         platformManager = FindObjectOfType<PlatformManager>();
         levelReference = platformManager.GetLevel();
         jumpVelocity = Vector2.zero;
+
+        sprite = GetComponentInChildren<SpriteRenderer>();
     }
 
     void Update()
     {
         Move();
-        if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2 ||
-            Input.GetKeyDown(KeyCode.Space) && isWallSliding && jumpCount < 3)
+
+        // Check if spacebar is currently being held down
+        if (Input.GetKey(KeyCode.Space) && isGrounded)
         {
+            canResetIsGrounded = false;
+            Jump();
+            StartCoroutine(ResetCanResetIsGroundedBool());
+        }
+        else if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2)
+        {
+            // Allows for a single double jump if the player is in the air and hasn't double jumped yet
             Jump();
         }
 
@@ -57,56 +78,54 @@ public class PlayerController : MonoBehaviour
     {
         float x = Input.GetAxis("Horizontal");
         Vector2 targetVelocity = new Vector2(x * moveSpeed, rb.velocity.y);
+        
+        //sprite direction
+        if(targetVelocity.x > 0)
+        {
+            sprite.flipX = false;
+        }
+        else if(targetVelocity.x < 0)
+        {
+            sprite.flipX=true;
+        }
+        
         rb.velocity = targetVelocity;
     }
 
-
-
     void Jump()
     {
-        //platformManager.OnPlayerJump(jumpForce);
+        // Reset vertical velocity to ensure consistent jump behavior
+        rb.velocity = new Vector2(rb.velocity.x, 0);
 
-        jumpCount++; // increment jump counter
-
-        jumpVelocity = Vector2.zero;
-
-
-        // if its the first jump OR we are wall sliding, add normal force
-        if (jumpCount == 1 || isWallSliding)
+        // If the player is grounded or this is the first jump in the air (for double jumping)
+        if (isGrounded || jumpCount < 2)
         {
-            //Vector2 jumpDirection = Vector2.up; // Default jump direction is up
-            jumpDirection = Vector2.up;
+            float force = jumpForce;
 
-            if (isWallSliding && contactingWall != null)
+            // If not grounded and attempting a double jump, reduce the force
+            if (!isGrounded && jumpCount == 1)
             {
-                // Determine the side of the wall by comparing x positions
-                float wallSide = Mathf.Sign(contactingWall.transform.position.x - transform.position.x);
-
-                // Apply jump force upwards and opposite to the wall side
-                // (wallSide will be positive if wall is on the right, negative if on the left), 
-                jumpDirection += Vector2.right * -wallSide;
-                jumpDirection.Normalize();
-
-                //rb.velocity += jumpDirection * 25;
-
-                // Untether wall for next calculation
-                contactingWall = null;
+                force *= 0.75f; // Reduce force for double jump
             }
 
-            // Apply the jump force with direction
-            jumpVelocity += jumpDirection * jumpForce;
-        }
-        // if second jump and not wallsliding, add fraction of force
-        else if (jumpCount == 2 && !isWallSliding)
-        {
-            //second jump not as powerful
-            jumpVelocity = new Vector2(0, jumpForce * 0.75f);
-        }
+            // Apply jump force
+            rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
 
-        //add force
-        rb.velocity += jumpVelocity;
+            // Update jumpCount and isGrounded status
+            jumpCount++;
+            if (isGrounded)
+            {
+                isGrounded = false; // Mark as no longer grounded since we're jumping
+                jumpCount = 1; // Reset jumpCount to allow for the next jump
+            }
+        }
     }
 
+    IEnumerator ResetCanResetIsGroundedBool()
+    {
+        yield return new WaitForSeconds(0.5f); // Wait for 0.5 seconds before allowing another jump
+        canResetIsGrounded = true;
+    }
     private void UpdatePosition()
     {
         
@@ -115,7 +134,7 @@ public class PlayerController : MonoBehaviour
             levelReference.Translate(Vector3.down * scrollSpeed * Time.deltaTime);
             transform.Translate(Vector3.down * scrollSpeed * Time.deltaTime);
 
-            distanceTravelled += Time.deltaTime * distanceMultiplier; // Testing distance travelled based on time spent going up
+            isScoring = true;
         }
         else if (transform.position.y < -4.5f) // below camera range, scroll back down a little
         {
@@ -125,17 +144,25 @@ public class PlayerController : MonoBehaviour
         else
         {
             levelUpdated = true;
+            isScoring = false;
         }
     }
 
     // Check if the player is grounded
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        //PLAYER HIT BY DAMAGEABLE
+        if (collision.gameObject.CompareTag("Obstacle"))
+        {
+            DeductHealth();
+        }
+
         Debug.Log(collision.gameObject.name);
         //if the collided object is ground (i.e. platform) and if the platform is below player
         if (collision.gameObject.CompareTag("Ground") && collision.transform.position.y < transform.position.y)
         {
-            isGrounded = true;
+            if(canResetIsGrounded)
+                isGrounded = true;
             jumpCount = 0; // reset jump count
             levelUpdated = false;
         }
@@ -144,6 +171,18 @@ public class PlayerController : MonoBehaviour
         {
             isWallSliding = true;
             contactingWall = collision.gameObject; // assign gameobject
+        }
+    }
+
+    private void DeductHealth()
+    {
+        currentHitsLeft -= 1;
+
+        if (currentHitsLeft < 0)
+        {
+            // dead, end game
+            Debug.Log("DEATH!");
+            Application.Quit();
         }
     }
 

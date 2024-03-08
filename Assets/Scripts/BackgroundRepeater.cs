@@ -14,9 +14,19 @@ public enum AREAS
     SECRET
 }
 
+public enum DIFFICULTY
+{
+    TRIVIAL = 10,
+    EASY = 6,
+    MEDIUM = 4,
+    HARD = 2,
+    INSANE = 1
+}
+
 public class BackgroundRepeater : MonoBehaviour
 {
-    [SerializeField] private AREAS currArea = AREAS.INNER_CORE; // starting 
+    public DIFFICULTY difficulty;
+    public AREAS currArea = AREAS.INNER_CORE; // starting 
     [SerializeField] private Transform levelParent;
     PlatformManager platformManager;
     public List<GameObject> backgroundPrefab; // Reference to the background prefab
@@ -29,16 +39,21 @@ public class BackgroundRepeater : MonoBehaviour
     private float spawnThreshold;
     public GameObject lastSpawnedBackgroundUp;
     public GameObject currentSpawnedBackground;
-   // public GameObject lastSpawnedBackgroundDown;
+    // public GameObject lastSpawnedBackgroundDown;
+
+    public Transform player;
+    public bool canCountBGTile = false;
 
     void Start()
     {
+        player = FindObjectOfType<PlayerController>().transform;
+
         //check that platformManager has been found
         platformManager = FindObjectOfType<PlatformManager>();
         if(platformManager == null)
             Debug.LogError("Could not find paltformManager");
         //tilesUntilNext = Mathf.FloorToInt((tilesUntilNext / 1.7f)*2.3f); // equation to set tileUntilNext value
-        tilesUntilNext = Mathf.FloorToInt((tilesUntilNext / 1f) * 0.5f); // CHANGED FOR QUICKER TRANSITION -----TESTING
+        tilesUntilNext = Mathf.FloorToInt((tilesUntilNext / ((float)difficulty * 0.5f)) * 0.5f); // CHANGED FOR QUICKER TRANSITION -----TESTING
         // Instantiate the initial background and keep a reference to it
         currAreaBackground = backgroundPrefab[(int)currArea];
         GameObject initialBackground = Instantiate(currAreaBackground, transform.position, Quaternion.identity,levelParent);
@@ -74,6 +89,8 @@ public class BackgroundRepeater : MonoBehaviour
            // lastSpawnedBackgroundDown = currentSpawnedBackground;
             currentSpawnedBackground = lastSpawnedBackgroundUp;
 
+            canCountBGTile = true; // set bool for player to count the backgrounds passed
+
             ////NOTE Easier to control in inspector as all backgrounds are uniform in size
             //tileHeight = (lastSpawnedBackgroundUp.transform.GetChild(0).GetComponent<SpriteRenderer>().size.y * 1.5f);
 
@@ -86,6 +103,9 @@ public class BackgroundRepeater : MonoBehaviour
             // Update the reference to the last spawned background upwards
             lastSpawnedBackgroundUp = newBackgroundUp;
         }
+
+        TrackBackgroundsPassed();
+
         /*
         // Check if the camera has moved past a certain point of the last spawned background downwards
         else if (spawnThresholdAbove <= lastSpawnedBackgroundDown.transform.position.y)
@@ -103,6 +123,19 @@ public class BackgroundRepeater : MonoBehaviour
             lastSpawnedBackgroundDown = newBackgroundDown;
         }
         */
+    }
+
+    private void TrackBackgroundsPassed()
+    {
+        if(player.position.y > lastSpawnedBackgroundUp.transform.position.y + -14f)
+        {
+            Debug.Log("Hit BG Count Point");
+            if(canCountBGTile) 
+            {
+                tilesCleared++;
+                canCountBGTile = false; // close bool for next pass of bg count
+            }
+        }
     }
 
     //chagne bakcground dpending on the currArea
