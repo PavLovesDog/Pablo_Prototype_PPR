@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 172572150508809860}
   - component: {fileID: 2884640889114132301}
   - component: {fileID: 9134623779134150939}
+  - component: {fileID: 6805804991484568992}
   m_Layer: 0
   m_Name: surfacePlatform
   m_TagString: Ground
@@ -223,6 +224,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 9.081236, y: 1.2310898}
   m_EdgeRadius: 0
+--- !u!114 &6805804991484568992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6609185050289386161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3247c683899370542ace4980c36a9833, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 0}
 --- !u!1 &7713260742081146197
 GameObject:
   m_ObjectHideFlags: 0
