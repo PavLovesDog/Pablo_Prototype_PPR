@@ -529,9 +529,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0deed1a7d84bfb64db977e98cac30577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollSpeed: 5
+  scrollSpeed: 8
   moveSpeed: 10
   jumpForce: 20
+  distanceTravelled: 0
+  distanceMultiplier: 2
   jumpVelocity: {x: 0, y: 0}
   jumpDirection: {x: 0, y: 0}
 --- !u!50 &1373594666
@@ -824,7 +826,7 @@ MonoBehaviour:
   - {fileID: 5537429600226865779, guid: f52ef5f3d5d5e0e48959918371e72dad, type: 3}
   - {fileID: 5537429600226865779, guid: ada9d4c855d5adf49b5b6942460507f0, type: 3}
   tilesUntilNext: 10
-  tileHeight: 30
+  tileHeight: 29
   tilesCleared: 0
   lastSpawnedBackgroundUp: {fileID: 0}
   currentSpawnedBackground: {fileID: 0}

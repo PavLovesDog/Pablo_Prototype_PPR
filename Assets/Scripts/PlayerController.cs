@@ -19,6 +19,10 @@ public class PlayerController : MonoBehaviour
     private bool levelUpdated = true;
     private GameObject contactingWall;
 
+    //TESTING
+    [SerializeField] private float distanceTravelled = 0;
+    [SerializeField] private float distanceMultiplier = 2f;
+
     private Vector2 moveVelocity;
     //debug
     public Vector2 jumpVelocity;
@@ -105,10 +109,13 @@ public class PlayerController : MonoBehaviour
 
     private void UpdatePosition()
     {
+        
         if (/*isGrounded&&*/transform.position.y > -1)
         {
             levelReference.Translate(Vector3.down * scrollSpeed * Time.deltaTime);
             transform.Translate(Vector3.down * scrollSpeed * Time.deltaTime);
+
+            distanceTravelled += Time.deltaTime * distanceMultiplier; // Testing distance travelled based on time spent going up
         }
         else if (transform.position.y < -4.5f) // below camera range, scroll back down a little
         {
@@ -151,7 +158,7 @@ public class PlayerController : MonoBehaviour
     //quits the game when the character falls off screen (This will be changed to an end screen
     private void OnBecameInvisible()
     {
-        if (transform.position.y < Camera.main.transform.position.y - 5)
+        if (transform.position.y < Camera.main.transform.position.y - 3)
         {
             //Checks wheehter it's played in unity editor or standalone. This is only for quitting so far
 #if UNITY_EDITOR
