@@ -23,6 +23,9 @@ public class ObstacleManager : MonoBehaviour
     public float timer;
     public float timeBetweenSpawns;
 
+    //bools
+    private bool startDelay = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +49,8 @@ public class ObstacleManager : MonoBehaviour
                 break;
 
             case AREAS.OUTER_CORE:
+                if(startDelay)
+                    DelaySpawnStart();
                 HandleOuterCoreObstacles();
                 break;
 
@@ -61,6 +66,20 @@ public class ObstacleManager : MonoBehaviour
                 HandleOceanObstacles();
                 break;
         }
+    }
+
+    private void DelaySpawnStart()
+    {
+        startDelay = false;
+        float delayTime = 8f;
+        while(timer < delayTime)
+        {
+            timer += Time.deltaTime;
+
+            if (timer > delayTime)
+                break;
+        }
+        timer = 0;
     }
 
     private void HandleOceanObstacles()
@@ -215,7 +234,7 @@ public class ObstacleManager : MonoBehaviour
                                                          Random.Range(projectileScript.speed - 5, projectileScript.speed + 2));
             }
 
-            timeBetweenSpawns = Random.Range(1f, 3f);
+            timeBetweenSpawns = Random.Range(1f, 4f);
             timer = 0;
         }
     }

@@ -200,7 +200,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   direction: {x: 10, y: 0}
-  speed: 15
+  speed: 10
 --- !u!50 &7821026708128879507
 Rigidbody2D:
   serializedVersion: 4

@@ -200,7 +200,7 @@ public class PlayerController : MonoBehaviour
 
             isScoring = true;
         }
-        else if (transform.position.y < -4.5f) // below camera range, scroll back down a little
+        else if (transform.position.y < -3.5f) // below camera range, scroll back down a little
         {
             levelReference.Translate(Vector3.up * scrollSpeed * Time.deltaTime);
             transform.Translate(Vector3.up * scrollSpeed * Time.deltaTime);
@@ -253,7 +253,7 @@ public class PlayerController : MonoBehaviour
             EndGame();
         }
         //if the player is below the camera
-        if (transform.position.y < Camera.main.transform.position.y - (Camera.main.orthographicSize / 2 + 3))
+        if (transform.position.y < Camera.main.transform.position.y - (Camera.main.orthographicSize / 2 + 6))
         {
             print("death");
             //Checks wheehter it's played in unity editor or standalone. This is only for quitting so far
