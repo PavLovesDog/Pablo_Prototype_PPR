@@ -7,15 +7,16 @@ TagManager:
   - Ground
   - Wall
   - Obstacle
+  - Upgrade
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Platforms
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Obstacles
   - 
   - 
   - 

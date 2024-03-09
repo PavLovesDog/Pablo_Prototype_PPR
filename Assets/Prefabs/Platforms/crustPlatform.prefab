@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4689370628809008168}
   - component: {fileID: 7487497915217663911}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Crust_Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 2884640889114132301}
   - component: {fileID: 9134623779134150939}
   - component: {fileID: 9060340822266452460}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: crustPlatform
   m_TagString: Ground
   m_Icon: {fileID: 0}

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(CleanUpGameObject))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class Projectile : MonoBehaviour
 {
     public Vector2 direction = Vector2.up; // Default direction
@@ -18,12 +20,15 @@ public class Projectile : MonoBehaviour
             Debug.LogError("Projectile script requires a Rigidbody component.");
             return;
         }
+        if (rb.bodyType == RigidbodyType2D.Dynamic)
+        {
 
-        // Normalize the direction to ensure it's a unit vector, then multiply by speed to get velocity
-        Vector3 velocity = direction.normalized * speed;
+            // Normalize the direction to ensure it's a unit vector, then multiply by speed to get velocity
+            Vector3 velocity = direction.normalized * speed;
 
-        // Apply the velocity to the rigidbody
-        rb.velocity = velocity;
+            // Apply the velocity to the rigidbody
+            rb.velocity = velocity;
+        }
     }
 
     //Use this method to change direction of projectile in other scripts

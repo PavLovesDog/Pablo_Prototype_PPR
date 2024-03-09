@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5548070029275653429}
   - component: {fileID: 1081568255916689562}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Backlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1468623261789667433}
   - component: {fileID: 8916856525489465745}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: InnerCore_Platform_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -181,7 +181,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1816247426799176715}
   - component: {fileID: 3881096046603338819}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Platform Illumination
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -278,7 +278,7 @@ GameObject:
   - component: {fileID: 172572150508809860}
   - component: {fileID: 2884640889114132301}
   - component: {fileID: 9134623779134150939}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: innerCorePlatform
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -514,7 +514,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2324883182065094703}
   - component: {fileID: 5318742417227827435}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Baselight (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

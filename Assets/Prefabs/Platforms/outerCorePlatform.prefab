@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1468623261789667433}
   - component: {fileID: 8916856525489465745}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: outerCore_Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 4716675341206237436}
   - component: {fileID: 172572150508809860}
   - component: {fileID: 9134623779134150939}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: outerCorePlatform
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -286,7 +286,7 @@ GameObject:
   m_Component:
   - component: {fileID: 204228110460570028}
   - component: {fileID: 6313466656531808868}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Light 2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}

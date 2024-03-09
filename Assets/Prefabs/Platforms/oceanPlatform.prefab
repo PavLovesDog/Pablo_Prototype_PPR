@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1353811420061594039}
   - component: {fileID: 6348254366378241294}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ocean_Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 172572150508809860}
   - component: {fileID: 2884640889114132301}
   - component: {fileID: 816272868809509120}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: oceanPlatform
   m_TagString: Ground
   m_Icon: {fileID: 0}

@@ -77,6 +77,7 @@ public class BackgroundRepeater : MonoBehaviour
             SetAreaBackground();
 
             tilesUntilNext = Mathf.FloorToInt(1.7f * tilesUntilNext + 2.3f);
+            tilesCleared = 0;
         }
 
         float spawnThresholdBelow = Camera.main.transform.GetChild(0).position.y;

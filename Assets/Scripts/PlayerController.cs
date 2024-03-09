@@ -3,14 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.U2D.Aseprite;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-
+/// <summary>
+/// 
+/// TODO:
+/// 2 upgrades
+/// 
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
     PlatformManager platformManager;
     private Transform levelReference;
     private Rigidbody2D rb;
+    private Animator animator;
     public float scrollSpeed = 5.0f;
     public float moveSpeed = 5f;
     public float dashSpeed = 10f;
@@ -23,6 +31,8 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private bool isWallSliding;
     private bool levelUpdated = true;
+    private bool hasJumpBoots = false;
+    private bool hasDashBoots = false;
     private GameObject contactingWall;
 
     //Health
@@ -42,6 +52,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+
         //set health full
         currentHitsLeft = maxHits;
 
@@ -51,40 +62,51 @@ public class PlayerController : MonoBehaviour
         jumpVelocity = Vector2.zero;
 
         sprite = GetComponentInChildren<SpriteRenderer>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        //checkl for dead conditions
+        CheckDeath();
+
+        //dashing
+        if ((Input.GetKeyDown(KeyCode.LeftShift) && canDash) && hasDashBoots)
         {
             pauseMovementInput = true;
             Dash();
         }
         else if (!pauseMovementInput)
-        { 
+        {
             Move();
         }
+        //lets double jump be available
 
-        // Check if spacebar is currently being held down
-        if (Input.GetKey(KeyCode.Space) && isGrounded)
+        if (isGrounded || hasJumpBoots)
         {
-            canResetIsGrounded = false;
-            Jump();
-            StartCoroutine(ResetCanResetIsGroundedBool());
+
+            // Check if spacebar is currently being held down
+            if (Input.GetKey(KeyCode.Space) && isGrounded)
+            {
+                canResetIsGrounded = false;
+                Jump();
+                StartCoroutine(ResetCanResetIsGroundedBool());
+            }
+            else if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2)
+            {
+                // Allows for a single double jump if the player is in the air and hasn't double jumped yet
+                Jump();
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.Space) && jumpCount < 2)
-        {
-            // Allows for a single double jump if the player is in the air and hasn't double jumped yet
-            Jump();
-        }
+
 
         Vector2 targetVelocity = jumpVelocity + moveVelocity;
-
+        /*
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
             Dash();
         }
-
+        */
         UpdatePosition();
     }
 
@@ -92,17 +114,23 @@ public class PlayerController : MonoBehaviour
     {
         float x = Input.GetAxis("Horizontal");
         Vector2 targetVelocity = new Vector2(x * moveSpeed, rb.velocity.y);
-        
+
         //sprite direction
-        if(targetVelocity.x > 0)
+        if (targetVelocity.x > 0)
         {
             sprite.flipX = false;
+            animator.SetBool("isWalking", true);
         }
-        else if(targetVelocity.x < 0)
+        else if (targetVelocity.x < 0)
         {
-            sprite.flipX=true;
+            sprite.flipX = true;
+            animator.SetBool("isWalking", true);
         }
-        
+        else
+        {
+            animator.SetBool("isWalking", false);
+        }
+
         rb.velocity = targetVelocity;
     }
 
@@ -124,7 +152,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
         pauseMovementInput = false;
 
-        yield return new WaitForSeconds(dashCooldown/2);
+        yield return new WaitForSeconds(dashCooldown / 2);
         canDash = true;
     }
 
@@ -134,7 +162,7 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector2(rb.velocity.x, 0);
 
         // If the player is grounded or this is the first jump in the air (for double jumping)
-        if (isGrounded || jumpCount < 2)
+        if (isGrounded || (jumpCount < 2))
         {
             float force = jumpForce;
 
@@ -164,7 +192,7 @@ public class PlayerController : MonoBehaviour
     }
     private void UpdatePosition()
     {
-        
+
         if (/*isGrounded&&*/transform.position.y > -1)
         {
             levelReference.Translate(Vector3.down * scrollSpeed * Time.deltaTime);
@@ -194,11 +222,11 @@ public class PlayerController : MonoBehaviour
             //minus some points
         }
 
-        Debug.Log(collision.gameObject.name);
+        //Debug.Log(collision.gameObject.name);
         //if the collided object is ground (i.e. platform) and if the platform is below player
         if (collision.gameObject.CompareTag("Ground") && collision.transform.position.y < transform.position.y)
         {
-            if(canResetIsGrounded)
+            if (canResetIsGrounded)
                 isGrounded = true;
             jumpCount = 0; // reset jump count
             levelUpdated = false;
@@ -214,15 +242,36 @@ public class PlayerController : MonoBehaviour
     private void DeductHealth()
     {
         currentHitsLeft -= 1;
-
-        if (currentHitsLeft < 0)
+    }
+    private void CheckDeath()
+    {
+        //chcek health
+        if (currentHitsLeft <= 0)
         {
             // dead, end game
             Debug.Log("DEATH!");
-            Application.Quit();
+            EndGame();
+        }
+        //if the player is below the camera
+        if (transform.position.y < Camera.main.transform.position.y - (Camera.main.orthographicSize / 2 + 3))
+        {
+            print("death");
+            //Checks wheehter it's played in unity editor or standalone. This is only for quitting so far
+            EndGame();
         }
     }
+    private void EndGame()
+    {
+#if UNITY_EDITOR
+        if (EditorApplication.isPlaying)
+            EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+    }
 
+    // COLLISION STUFF
+    #region Collision
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("Wall"))
@@ -230,21 +279,9 @@ public class PlayerController : MonoBehaviour
             isWallSliding = true;
             //jumpCount = 0;
         }
+
     }
-    //quits the game when the character falls off screen (This will be changed to an end screen
-    private void OnBecameInvisible()
-    {
-        if (transform.position.y < Camera.main.transform.position.y - 3)
-        {
-            //Checks wheehter it's played in unity editor or standalone. This is only for quitting so far
-#if UNITY_EDITOR
-            if (EditorApplication.isPlaying)
-                EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
-        }
-    }
+
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
@@ -258,4 +295,25 @@ public class PlayerController : MonoBehaviour
             //contactingWall = null;
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Upgrade")
+        {
+            if (collision.name == "JumpBoots")
+            {
+                hasJumpBoots = true;
+                Destroy(collision.gameObject);
+            }
+            else if (collision.name == "DashBoots")
+            {
+                hasDashBoots= true;
+                
+                Destroy(collision.gameObject);
+            }
+        }
+    }
+    #endregion
+
 }
+

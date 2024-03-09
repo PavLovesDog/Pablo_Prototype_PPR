@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2884640889114132301}
   - component: {fileID: 9134623779134150939}
   - component: {fileID: 6805804991484568992}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: surfacePlatform
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -247,7 +247,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8730125091076697034}
   - component: {fileID: 1292484160992041170}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Surface_Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
