@@ -93,26 +93,23 @@ public class ObstacleManager : MonoBehaviour
             Transform[] spawnPositions = Random.value > 0.5f ? leftPos : rightPos;
             // Choose a random index for the selected spawn position array
             int randomIndex = Random.Range(0, spawnPositions.Length);
-            // Get the chosen spawn position
             Transform spawnPosition = spawnPositions[randomIndex];
 
-            // Instantiate the fireball prefab at the chosen spawn position
+            // Instantiate the fireball, child it to level so it moves with world
             GameObject fireball = Instantiate(fireballPrefab, spawnPosition.position, Quaternion.identity, levelParent.transform);
 
             // Adjust the fireball's velocity direction based on the spawn side
             Projectile projectileScript = fireball.GetComponent<Projectile>();
             if (projectileScript != null)
             {
-                // If spawned on the left, ensure the x direction of velocity is positive; if on the right, ensure it's negative
+                // If spawned on the left, make x direction velocity positive; if on the right, negative
                 float adjustedDirection = spawnPositions == leftPos ? 1f : -1f;
-                // Assuming your projectile script uses Vector2 for direction, and you want to adjust only the x component
+                //apply new velocity using the projjectile script function
                 projectileScript.ChangeVelocityDirection(new Vector2(adjustedDirection, projectileScript.direction.y),
                                                          Random.Range(projectileScript.speed - 5, projectileScript.speed + 2));
             }
 
-            // Set timeBetweenSpawns to a random number between 2 and 6
             timeBetweenSpawns = Random.Range(1f, 3f);
-            // Reset timer
             timer = 0;
         }
     }

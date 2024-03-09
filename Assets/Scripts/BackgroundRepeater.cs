@@ -127,7 +127,7 @@ public class BackgroundRepeater : MonoBehaviour
 
     private void TrackBackgroundsPassed()
     {
-        if(player.position.y > lastSpawnedBackgroundUp.transform.position.y + -14f)
+        if(player.position.y > lastSpawnedBackgroundUp.transform.position.y + -8f)
         {
             Debug.Log("Hit BG Count Point");
             if(canCountBGTile) 

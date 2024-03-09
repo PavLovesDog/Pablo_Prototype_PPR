@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     public float scrollSpeed = 5.0f;
     public float moveSpeed = 5f;
+    public float dashSpeed = 10f;
+    public float dashCooldown = 1f;
+    private bool canDash = true;
+    private bool pauseMovementInput = false;
     public float jumpForce = 5f;
     private int jumpCount = 0;
 
@@ -51,7 +55,15 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        Move();
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        {
+            pauseMovementInput = true;
+            Dash();
+        }
+        else if (!pauseMovementInput)
+        { 
+            Move();
+        }
 
         // Check if spacebar is currently being held down
         if (Input.GetKey(KeyCode.Space) && isGrounded)
@@ -67,10 +79,12 @@ public class PlayerController : MonoBehaviour
         }
 
         Vector2 targetVelocity = jumpVelocity + moveVelocity;
-        if (isWallSliding)
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
-            //display an arrow in the opposing direction from the wall the player is attached to
+            Dash();
         }
+
         UpdatePosition();
     }
 
@@ -90,6 +104,28 @@ public class PlayerController : MonoBehaviour
         }
         
         rb.velocity = targetVelocity;
+    }
+
+    void Dash()
+    {
+        canDash = false;
+        // apply a impulse force in the direction the player is pressing
+
+        float x = Input.GetAxisRaw("Horizontal");
+        Vector2 impulseDirection = new Vector2(x * dashSpeed, 0);
+
+        rb.AddForce(impulseDirection, ForceMode2D.Impulse);
+
+        StartCoroutine(ResetDashBool());
+    }
+
+    IEnumerator ResetDashBool()
+    {
+        yield return new WaitForSeconds(0.25f);
+        pauseMovementInput = false;
+
+        yield return new WaitForSeconds(dashCooldown/2);
+        canDash = true;
     }
 
     void Jump()
@@ -155,6 +191,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Obstacle"))
         {
             DeductHealth();
+            //minus some points
         }
 
         Debug.Log(collision.gameObject.name);
