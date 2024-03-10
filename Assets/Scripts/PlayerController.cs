@@ -1,11 +1,8 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
-using UnityEngine.UIElements;
+//using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 /// <summary>
 /// 
@@ -32,7 +29,9 @@ public class PlayerController : MonoBehaviour
     private bool isWallSliding;
     private bool levelUpdated = true;
     private bool hasJumpBoots = false;
+    public Image jumpUpgradeSprite;
     private bool hasDashBoots = false;
+    public Image dashUpgradeSprite;
     private GameObject contactingWall;
 
     //Health
@@ -302,12 +301,20 @@ public class PlayerController : MonoBehaviour
         {
             if (collision.name == "JumpBoots")
             {
+                //change alpha of jump boot image 
+                Color currentcolor = jumpUpgradeSprite.color;
+                currentcolor.a = 1f;
+                jumpUpgradeSprite.color = currentcolor;
                 hasJumpBoots = true;
                 Destroy(collision.gameObject);
             }
             else if (collision.name == "DashBoots")
             {
-                hasDashBoots= true;
+                //change alpha of dash boot image 
+                Color currentcolor = dashUpgradeSprite.color;
+                currentcolor.a = 1f;
+                dashUpgradeSprite.color = currentcolor;
+                hasDashBoots = true;
                 
                 Destroy(collision.gameObject);
             }

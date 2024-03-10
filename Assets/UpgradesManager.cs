@@ -20,7 +20,7 @@ public class UpgradesManager : MonoBehaviour
     void Start()
     {
         
-        timeUntilNextUpgradeSpawn = Random.Range(2f, 5f);
+        timeUntilNextUpgradeSpawn = Random.Range(2f, 4f);
     }
 
     // Update is called once per frame
@@ -39,7 +39,8 @@ public class UpgradesManager : MonoBehaviour
         if (cArea == jumpBootsSpawnArea)
         {
             SpawnJumpBoots();
-        } else if (cArea == dashBootsSpawnArea)
+        } 
+        else if (cArea == dashBootsSpawnArea)
         {
             SpawnDashBoots();
         }
@@ -48,7 +49,7 @@ public class UpgradesManager : MonoBehaviour
     void SpawnDashBoots()
     {
         if (!dashBootsAlreadySpawned) {
-            Vector2 randomSpawn = new Vector2(Random.Range(0, Screen.width), Random.Range(0, Screen.height));
+            Vector2 randomSpawn = new Vector2(Random.Range(0f, 1f), Random.Range(0f, 1f));
             randomSpawn = Camera.main.ViewportToWorldPoint(randomSpawn);
             GameObject go = Instantiate(dashBootsPrefab, randomSpawn, Quaternion.identity, levelReference);
             go.name = "DashBoots";

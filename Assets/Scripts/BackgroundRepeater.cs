@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 //Enumn for the areas
@@ -53,7 +51,7 @@ public class BackgroundRepeater : MonoBehaviour
         if(platformManager == null)
             Debug.LogError("Could not find paltformManager");
         //tilesUntilNext = Mathf.FloorToInt((tilesUntilNext / 1.7f)*2.3f); // equation to set tileUntilNext value
-        tilesUntilNext = Mathf.FloorToInt((tilesUntilNext / ((float)difficulty * 0.5f)) * 0.5f); // CHANGED FOR QUICKER TRANSITION -----TESTING
+        tilesUntilNext = Mathf.FloorToInt((tilesUntilNext / ((float)difficulty * 0.5f)) * 0.25f); // CHANGED FOR QUICKER TRANSITION -----TESTING
         // Instantiate the initial background and keep a reference to it
         currAreaBackground = backgroundPrefab[(int)currArea];
         GameObject initialBackground = Instantiate(currAreaBackground, transform.position, Quaternion.identity,levelParent);

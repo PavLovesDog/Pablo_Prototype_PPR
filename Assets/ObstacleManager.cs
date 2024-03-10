@@ -1,8 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Principal;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
 public class ObstacleManager : MonoBehaviour
@@ -25,6 +20,17 @@ public class ObstacleManager : MonoBehaviour
 
     //bools
     private bool startDelay = true;
+
+    #region random num generation
+    private System.Random systemRandom = new System.Random();
+
+    private int GenerateRandomInt(int minValue, int maxValue)
+    {
+        // Directly generate a random integer in the specified range.
+        // Note: maxValue is exclusive
+        return systemRandom.Next(minValue, maxValue);
+    }
+    #endregion
 
     // Start is called before the first frame update
     void Start()
@@ -187,7 +193,7 @@ public class ObstacleManager : MonoBehaviour
                 Projectile proj = go.GetComponent<Projectile>();
                 if (proj != null)
                 {
-                    proj.ChangeVelocityDirection(Vector2.down, Random.Range(0.5f, 5f));
+                    proj.ChangeVelocityDirection(Vector2.down, Random.Range(2f, 6f));
                 }
             }
             // set the timeBetweenSpawns to a random number
@@ -214,9 +220,11 @@ public class ObstacleManager : MonoBehaviour
         if (timer > timeBetweenSpawns)
         {
             // Select a spawn position array at random (left or right)
-            Transform[] spawnPositions = Random.value > 0.5f ? leftPos : rightPos;
+            int randNum = GenerateRandomInt( 0, 2);
+            Debug.Log(randNum);
+            Transform[] spawnPositions = randNum > 0.5f ? leftPos : rightPos;
             // Choose a random index for the selected spawn position array
-            int randomIndex = Random.Range(0, spawnPositions.Length);
+            int randomIndex = GenerateRandomInt(0, spawnPositions.Length);
             Transform spawnPosition = spawnPositions[randomIndex];
 
             // Instantiate the fireball, child it to level so it moves with world
@@ -234,7 +242,7 @@ public class ObstacleManager : MonoBehaviour
                                                          Random.Range(projectileScript.speed - 5, projectileScript.speed + 2));
             }
 
-            timeBetweenSpawns = Random.Range(1f, 4f);
+            timeBetweenSpawns = GenerateRandomInt(1, 5);
             timer = 0;
         }
     }
